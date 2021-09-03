@@ -75,14 +75,14 @@ NodeOptions CreateNodeOptions(
 std::tuple<NodeOptions, TrajectoryOptions> LoadOptions(
     const std::string& configuration_directory,
     const std::string& configuration_basename) {
-  // 获取配置文件所在的目录
+  // 获取配置文件所在的目录，make_unique 同 unique_ptr 、auto_ptr 等一样，都是 smart pointer，可以取代new 并且无需 delete pointer，有助于代码管理。
   auto file_resolver =
       absl::make_unique<cartographer::common::ConfigurationFileResolver>(
           std::vector<std::string>{configuration_directory});
         
   // 读取配置文件内容到code中
   const std::string code =
-      file_resolver->GetFileContentOrDie(configuration_basename);
+      file_resolver->GetFileContentOrDie(configuration_basename); // cartographer/common/configuration_file_resolver文件实现
 
   // 根据给定的字符串, 生成一个lua字典
   cartographer::common::LuaParameterDictionary lua_parameter_dictionary(

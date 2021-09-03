@@ -56,7 +56,7 @@ namespace cartographer_ros {
 namespace {
 
 void Run() {
-  constexpr double kTfBufferCacheTimeInSeconds = 10.;
+  constexpr double kTfBufferCacheTimeInSeconds = 10.; //constexpr:常量表达式，编译时具有更好的代码优化
   tf2_ros::Buffer tf_buffer{::ros::Duration(kTfBufferCacheTimeInSeconds)};
   // 开启监听tf的独立线程
   tf2_ros::TransformListener tf(tf_buffer);
@@ -127,9 +127,10 @@ int main(int argc, char** argv) {
    * 检测expression如果不为真, 则打印后面的description和栈上的信息
    * 然后退出程序, 出错后的处理过程和FATAL比较像.
    */
-  CHECK(!FLAGS_configuration_directory.empty())
+  //launch文件加载变量，判断配置文件是否有效
+  CHECK(!FLAGS_configuration_directory.empty())  //   .../configuration_files
       << "-configuration_directory is missing.";
-  CHECK(!FLAGS_configuration_basename.empty())
+  CHECK(!FLAGS_configuration_basename.empty())   //   .../.lua文件
       << "-configuration_basename is missing.";
 
   // ros节点的初始化
