@@ -85,7 +85,7 @@ void Run() {
   Node node(node_options, std::move(map_builder), &tf_buffer,
             FLAGS_collect_metrics);
 
-  // 如果加载了pbstream文件, 就执行这个函数
+  // 如果加载了pbstream文件, 就执行这个函数, localization模式与pbstream模式
   if (!FLAGS_load_state_filename.empty()) {
     node.LoadState(FLAGS_load_state_filename, FLAGS_load_frozen_state);
   }
