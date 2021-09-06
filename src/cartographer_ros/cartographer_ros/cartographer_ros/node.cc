@@ -117,7 +117,7 @@ std::string TrajectoryStateToString(const TrajectoryState trajectory_state) {
 Node::Node(
     const NodeOptions& node_options,
     std::unique_ptr<cartographer::mapping::MapBuilderInterface> map_builder,
-    tf2_ros::Buffer* const tf_buffer, const bool collect_metrics)
+    tf2_ros::Buffer* const tf_buffer, const bool collect_metrics) //函数后面的冒号表示一个实例的赋值
     : node_options_(node_options),
       map_builder_bridge_(node_options_, std::move(map_builder), tf_buffer) {
   // 将mutex_上锁, 防止在初始化时数据被更改
@@ -134,19 +134,19 @@ Node::Node(
   // 发布SubmapList
   submap_list_publisher_ =
       node_handle_.advertise<::cartographer_ros_msgs::SubmapList>(
-          kSubmapListTopic, kLatestOnlyPublisherQueueSize);
+          kSubmapListTopic, kLatestOnlyPublisherQueueSize);//告知master节点，我们将要向kSubmapListTopic这个Topic上发布一个::cartographer_ros_msgs::SubmapList型的message，而第二个参数是publishing的缓存大小; 发布的该Topic即可允许其他节点获取到我们构建的Submap的信息
   // 发布轨迹
   trajectory_node_list_publisher_ =
       node_handle_.advertise<::visualization_msgs::MarkerArray>(
-          kTrajectoryNodeListTopic, kLatestOnlyPublisherQueueSize);
+          kTrajectoryNodeListTopic, kLatestOnlyPublisherQueueSize);//同样的，向kTrajectoryNodeListTopic这个Topic上发布了一个::visualization_msgs::MarkerArray型的message
   // 发布landmark_pose
   landmark_poses_list_publisher_ =
       node_handle_.advertise<::visualization_msgs::MarkerArray>(
-          kLandmarkPosesListTopic, kLatestOnlyPublisherQueueSize);
+          kLandmarkPosesListTopic, kLatestOnlyPublisherQueueSize);//同样的，向kLandmarkPosesListTopic这个Topic上发布了一个::visualization_msgs::MarkerArray型的message
   // 发布约束
   constraint_list_publisher_ =
       node_handle_.advertise<::visualization_msgs::MarkerArray>(
-          kConstraintListTopic, kLatestOnlyPublisherQueueSize);
+          kConstraintListTopic, kLatestOnlyPublisherQueueSize);//同样的，向kConstraintListTopic这个Topic上发布了一个::visualization_msgs::MarkerArray型的message
   // 发布tracked_pose, 默认不发布
   if (node_options_.publish_tracked_pose) {
     tracked_pose_publisher_ =
@@ -162,15 +162,15 @@ Node::Node(
 
   // Step: 2 声明发布对应名字的ROS服务, 并将服务的发布器放入到vector容器中
   service_servers_.push_back(node_handle_.advertiseService(
-      kSubmapQueryServiceName, &Node::HandleSubmapQuery, this));
+      kSubmapQueryServiceName, &Node::HandleSubmapQuery, this));//注册一个Service,Service的名字由kSubmapQueryServiceName给出。第二个参数是该Service绑定的函数句柄,即当有一个service的request时，由该函数进行response. 注册的这个service就对应了submap_query这个service。这是cartographer_node可以提供的一个service.
   service_servers_.push_back(node_handle_.advertiseService(
       kTrajectoryQueryServiceName, &Node::HandleTrajectoryQuery, this));
   service_servers_.push_back(node_handle_.advertiseService(
-      kStartTrajectoryServiceName, &Node::HandleStartTrajectory, this));
+      kStartTrajectoryServiceName, &Node::HandleStartTrajectory, this));//同样的，注册Service名字为kStartTrajectoryServiceName，函数句柄为Node::HandleStartTrajectory
   service_servers_.push_back(node_handle_.advertiseService(
-      kFinishTrajectoryServiceName, &Node::HandleFinishTrajectory, this));
+      kFinishTrajectoryServiceName, &Node::HandleFinishTrajectory, this));//同样的，注册Service名字为kFinishTrajectoryServiceName，函数句柄为Node::HandleFinishTrajectory
   service_servers_.push_back(node_handle_.advertiseService(
-      kWriteStateServiceName, &Node::HandleWriteState, this));
+      kWriteStateServiceName, &Node::HandleWriteState, this));//同样的，注册Service名字为kWriteStateServiceName，函数句柄为Node::HandleWriteState
   service_servers_.push_back(node_handle_.advertiseService(
       kGetTrajectoryStatesServiceName, &Node::HandleGetTrajectoryStates, this));
   service_servers_.push_back(node_handle_.advertiseService(
@@ -179,24 +179,25 @@ Node::Node(
   // Step: 3 处理之后的点云的发布器
   scan_matched_point_cloud_publisher_ =
       node_handle_.advertise<sensor_msgs::PointCloud2>(
-          kScanMatchedPointCloudTopic, kLatestOnlyPublisherQueueSize);
+          kScanMatchedPointCloudTopic, kLatestOnlyPublisherQueueSize);//又发布了一个跟点云相关的Topic
 
   // Step: 4 进行定时器与函数的绑定, 定时发布数据
+  // wall_timers在node.h中定义，是一个存储::ros::WallTimer类型的vector, 以下通过vector的push_back操作依次将五个::ros::WallTimer型对象插入这个vector的末尾。::ros::WallTimer这个类参见如下链接：http://docs.ros.org/jade/api/roscpp/html/classros_1_1WallTimer.html . 简单说，这是一个定时器，这里分别为如下的五个函数设置了定时器。参数就是node_options里的各项参数；
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(node_options_.submap_publish_period_sec),  // 0.3s
       &Node::PublishSubmapList, this));
   if (node_options_.pose_publish_period_sec > 0) {
     publish_local_trajectory_data_timer_ = node_handle_.createTimer(
-        ::ros::Duration(node_options_.pose_publish_period_sec),  // 5e-3s
+        ::ros::Duration(node_options_.pose_publish_period_sec),  // 5e-3s, 5ms
         &Node::PublishLocalTrajectoryData, this);
   }
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
-          node_options_.trajectory_publish_period_sec),  // 30e-3s
+          node_options_.trajectory_publish_period_sec),  // 30e-3s, 30ms
       &Node::PublishTrajectoryNodeList, this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(
-          node_options_.trajectory_publish_period_sec),  // 30e-3s
+          node_options_.trajectory_publish_period_sec),  // 30e-3s, 30ms
       &Node::PublishLandmarkPosesList, this));
   wall_timers_.push_back(node_handle_.createWallTimer(
       ::ros::WallDuration(kConstraintPublishPeriodSec),  // 0.5s
@@ -224,7 +225,7 @@ Node::~Node() { FinishAllTrajectories(); }
 bool Node::HandleSubmapQuery(
     ::cartographer_ros_msgs::SubmapQuery::Request& request,
     ::cartographer_ros_msgs::SubmapQuery::Response& response) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(&mutex_);//设置互斥锁
   map_builder_bridge_.HandleSubmapQuery(request, response);
   return true;
 }
