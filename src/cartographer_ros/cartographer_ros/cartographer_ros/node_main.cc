@@ -95,7 +95,7 @@ void Run() {
     node.StartTrajectoryWithDefaultTopics(trajectory_options);
   }
 
-  ::ros::spin();
+  ::ros::spin();//将会进入循环，一直调用回调函数chatterCallback()
 
   // 结束所有处于活动状态的轨迹
   node.FinishAllTrajectories();

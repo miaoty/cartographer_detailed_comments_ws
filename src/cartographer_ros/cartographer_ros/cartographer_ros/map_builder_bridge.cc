@@ -209,7 +209,7 @@ void MapBuilderBridge::HandleSubmapQuery(
                                             request.submap_index};
   // 获取压缩后的地图数据
   const std::string error =
-      map_builder_->SubmapToProto(submap_id, &response_proto);
+      map_builder_->SubmapToProto(submap_id, &response_proto);//proto是Google提供的一个ProtoBuf库的工具Google Protobuf库，用来实现数据的序列化和反序列化。
   if (!error.empty()) {
     LOG(ERROR) << error;
     response.status.code = cartographer_ros_msgs::StatusCode::NOT_FOUND;
