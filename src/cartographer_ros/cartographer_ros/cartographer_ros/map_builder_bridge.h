@@ -67,19 +67,19 @@ class MapBuilderBridge {
     // Contains the trajectory data received from local SLAM, after
     // it had processed accumulated 'range_data_in_local' and estimated
     // current 'local_pose' at 'time'.
-    
+    //该结构体存储的是local SLAM处理后的结果。由range_data_in_local中已经估计出了在时刻time时的当前local_pose
     // LocalSlamData中包含了local slam的一些数据, 包含当前时间, 当前估计的位姿, 以及累计的所有雷达数据
     struct LocalSlamData {
-      ::cartographer::common::Time time;
-      ::cartographer::transform::Rigid3d local_pose;
-      ::cartographer::sensor::RangeData range_data_in_local;
+      ::cartographer::common::Time time;//时间
+      ::cartographer::transform::Rigid3d local_pose;//优化匹配出来的local_pose——在submap这个局部坐标系中的位姿
+      ::cartographer::sensor::RangeData range_data_in_local;//激光数据
     };
-    std::shared_ptr<const LocalSlamData> local_slam_data;
-    cartographer::transform::Rigid3d local_to_map;  // local frame 到 global frame间的坐标变换
+    std::shared_ptr<const LocalSlamData> local_slam_data;//局部SLAM的数据
+    cartographer::transform::Rigid3d local_to_map;  // //submap到global map的坐标变换关系
 
     // published_frame 到 tracking_frame 间的坐标变换
     std::unique_ptr<cartographer::transform::Rigid3d> published_to_tracking;
-    TrajectoryOptions trajectory_options;
+    TrajectoryOptions trajectory_options;//配置参数
 
     // c++11: std::shared_ptr 主要的用途就是方便资源的管理, 自动释放没有指针引用的资源
     // 使用引用计数来标识是否有其余指针指向该资源.(注意, shart_ptr本身指针会占1个引用)
@@ -92,7 +92,7 @@ class MapBuilderBridge {
       tf2_ros::Buffer* tf_buffer);
 
   MapBuilderBridge(const MapBuilderBridge&) = delete;
-  MapBuilderBridge& operator=(const MapBuilderBridge&) = delete;
+  MapBuilderBridge& operator=(const MapBuilderBridge&) = delete;//重载了赋值操作
 
   void LoadState(const std::string& state_filename, bool load_frozen_state);
   int AddTrajectory(
@@ -142,7 +142,7 @@ class MapBuilderBridge {
   std::unique_ptr<cartographer::mapping::MapBuilderInterface> map_builder_;
   tf2_ros::Buffer* const tf_buffer_;
 
-  std::unordered_map<std::string /* landmark ID */, int> landmark_to_index_;
+  std::unordered_map<std::string /* landmark ID */, int> landmark_to_index_;//跟landmark相关，其中std::string变量表征landmark的ID
 
   // These are keyed with 'trajectory_id'.
   std::unordered_map<int, TrajectoryOptions> trajectory_options_;
