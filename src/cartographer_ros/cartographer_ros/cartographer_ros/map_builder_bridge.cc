@@ -102,7 +102,7 @@ void PushAndResetLineMarker(visualization_msgs::Marker* marker,
 }  // namespace
 
 /**
- * @brief 根据传入的node_options, MapBuilder, 以及tf_buffer 完成三个本地变量的初始化
+ * @brief 根据传入的node_options, MapBuilder, 以及tf_buffer 完成三个本地变量的初始化，实例化赋值
  * 
  * @param[in] node_options 参数配置
  * @param[in] map_builder 在node_main.cc中传入的MapBuilder
@@ -511,7 +511,7 @@ visualization_msgs::MarkerArray MapBuilderBridge::GetConstraintList() {
   constraint_intra_marker.scale.x = kConstraintMarkerScale;
   constraint_intra_marker.pose.orientation.w = 1.0;
 
-  // 2 Intra residuals
+  // 2 Intra residuals, 内部残差
   visualization_msgs::Marker residual_intra_marker = constraint_intra_marker;
   residual_intra_marker.id = marker_id++;
   residual_intra_marker.ns = "Intra residuals";

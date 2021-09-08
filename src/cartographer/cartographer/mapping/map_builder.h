@@ -70,30 +70,30 @@ class MapBuilder : public MapBuilderInterface {
   }
 
   int num_trajectory_builders() const override {
-    return trajectory_builders_.size();
+    return trajectory_builders_.size();//向量的size即为TrajectoryBuilder的数量
   }
 
   // 返回指向CollatedTrajectoryBuilder的指针
   mapping::TrajectoryBuilderInterface *GetTrajectoryBuilder(
       int trajectory_id) const override {
-    return trajectory_builders_.at(trajectory_id).get();
+    return trajectory_builders_.at(trajectory_id).get();//从列表中取出指定id的TrajectoryBuilder
   }
-
+  // 获取所有TrajectoryBuilder的配置项。
   const std::vector<proto::TrajectoryBuilderOptionsWithSensorIds>
       &GetAllTrajectoryBuilderOptions() const override {
-    return all_trajectory_builder_options_;
+    return all_trajectory_builder_options_;//所有配置项都存在该向量中
   }
 
  private:
-  const proto::MapBuilderOptions options_;
-  common::ThreadPool thread_pool_; // 线程池
+  const proto::MapBuilderOptions options_;//MapBuilder的配置项
+  common::ThreadPool thread_pool_; // 线程池，为每一条trajectory都单独开辟一个线程
 
-  std::unique_ptr<PoseGraph> pose_graph_;
+  std::unique_ptr<PoseGraph> pose_graph_;//一个PoseGraph的智能指针，用来做Loop Closure
 
-  std::unique_ptr<sensor::CollatorInterface> sensor_collator_;
-  std::vector<std::unique_ptr<mapping::TrajectoryBuilderInterface>>
+  std::unique_ptr<sensor::CollatorInterface> sensor_collator_;//收集传感器数据的智能指针
+  std::vector<std::unique_ptr<mapping::TrajectoryBuilderInterface>> //一个向量，管理所有的TrajectoryBuilderInterface;应该是每一个trajectory对应了该向量的一个元素
       trajectory_builders_;
-  std::vector<proto::TrajectoryBuilderOptionsWithSensorIds>
+  std::vector<proto::TrajectoryBuilderOptionsWithSensorIds>//与每个TrajectoryBuilderInterface相对应的配置项
       all_trajectory_builder_options_;
 };
 

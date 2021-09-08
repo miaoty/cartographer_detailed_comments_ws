@@ -64,7 +64,7 @@ std::unique_ptr<carto::sensor::OdometryData> SensorBridge::ToOdometryData(
   const carto::common::Time time = FromRos(msg->header.stamp);
   // 找到 tracking坐标系 到 里程计的child_frame_id 的坐标变换, 所以下方要对sensor_to_tracking取逆
   const auto sensor_to_tracking = tf_bridge_.LookupToTracking(
-      time, CheckNoLeadingSlash(msg->child_frame_id));
+      time, CheckNoLeadingSlash(msg->child_frame_id));//该函数返回的是一个变换矩阵，查询的是某时刻某一帧数据的变换估计。
   if (sensor_to_tracking == nullptr) {
     return nullptr;
   }
@@ -174,6 +174,7 @@ std::unique_ptr<carto::sensor::ImuData> SensorBridge::ToImuData(
 }
 
 // 调用trajectory_builder_的AddSensorData进行数据的处理
+////最终，将先加速度和角加速度传入trajectory_builder_->AddSensorData做处理
 void SensorBridge::HandleImuMessage(const std::string& sensor_id,
                                     const sensor_msgs::Imu::ConstPtr& msg) {
   std::unique_ptr<carto::sensor::ImuData> imu_data = ToImuData(msg);

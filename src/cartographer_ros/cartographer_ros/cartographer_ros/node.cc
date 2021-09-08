@@ -484,7 +484,7 @@ void Node::PublishTrajectoryNodeList(
   if (trajectory_node_list_publisher_.getNumSubscribers() > 0) {
     absl::MutexLock lock(&mutex_);
     trajectory_node_list_publisher_.publish(
-        map_builder_bridge_.GetTrajectoryNodeList());
+        map_builder_bridge_.GetTrajectoryNodeList());//获取所有的轨迹节点与约束的rviz可视化MarkerArray
   }
 }
 
