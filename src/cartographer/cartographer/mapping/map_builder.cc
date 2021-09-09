@@ -107,7 +107,7 @@ MapBuilder::MapBuilder(const proto::MapBuilderOptions& options)
 
   // 在 cartographer/configuration_files/map_builder.lua 中设置
   // param: MAP_BUILDER.collate_by_trajectory 默认为false
-  if (options.collate_by_trajectory()) {
+  if (options.collate_by_trajectory()) {   //根据collate_by_trajectory的不同，CollatorInterface有两种不同的实现
     sensor_collator_ = absl::make_unique<sensor::TrajectoryCollator>();
   } else {
     // sensor_collator_初始化, 实际使用这个
