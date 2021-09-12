@@ -247,7 +247,9 @@ int MapBuilder::AddTrajectoryForDeserialization(
   // c++11: vector::emplace_back() 在原地构造, 直接传入vector, 不调用移动构造函数
 
   trajectory_builders_.emplace_back();
+  //配置项的添加
   all_trajectory_builder_options_.push_back(options_with_sensor_ids_proto);
+  //检查两者大小是否一致
   CHECK_EQ(trajectory_builders_.size(), all_trajectory_builder_options_.size());
   return trajectory_id;
 }
@@ -275,7 +277,7 @@ std::string MapBuilder::SubmapToProto(
     return "Requested submap " + std::to_string(submap_id.submap_index) +
            " from trajectory " + std::to_string(submap_id.trajectory_id) +
            " but it does not exist: maybe it has been trimmed.";
-  }
+  }//一些子图可能在优化过程中被裁掉。
 
   // 将压缩后的地图数据放入response
   submap_data.submap->ToResponseProto(submap_data.pose, response);
@@ -301,7 +303,7 @@ bool MapBuilder::SerializeStateToFile(bool include_unfinished_submaps,
 // 从pbstream文件向位姿图添加信息
 std::map<int, int> MapBuilder::LoadState(
     io::ProtoStreamReaderInterface* const reader, bool load_frozen_state) {
-  io::ProtoStreamDeserializer deserializer(reader);
+  io::ProtoStreamDeserializer deserializer(reader);//反序列化读取工具
 
   // Create a copy of the pose_graph_proto, such that we can re-write the
   // trajectory ids.

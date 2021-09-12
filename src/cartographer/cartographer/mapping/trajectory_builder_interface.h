@@ -57,10 +57,10 @@ class LocalSlamResultData;
  */
 class TrajectoryBuilderInterface {
  public:
-  struct InsertionResult {
+  struct InsertionResult {//InsertionResult就是用来保存插入Local Slam的一个节点的数据结构
     NodeId node_id;
-    std::shared_ptr<const TrajectoryNode::Data> constant_data;
-    std::vector<std::shared_ptr<const Submap>> insertion_submaps;
+    std::shared_ptr<const TrajectoryNode::Data> constant_data;//TrajectoryNode::Data包含了经过处理的一帧传感器数据
+    std::vector<std::shared_ptr<const Submap>> insertion_submaps;//已经建立起来的子图列表。
   };
 
   // c++11: std::function 通用多态函数封装器
