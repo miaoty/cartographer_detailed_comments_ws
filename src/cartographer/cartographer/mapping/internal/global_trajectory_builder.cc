@@ -109,7 +109,7 @@ class GlobalTrajectoryBuilder : public mapping::TrajectoryBuilderInterface {
               matching_result->insertion_result->insertion_submaps.end())});
     }
 
-    // 将结果数据传入回调函数中, 进行保存
+    // 将结果数据传入回调函数中, 进行保存,
     if (local_slam_result_callback_) {
       local_slam_result_callback_(
           trajectory_id_, matching_result->time, matching_result->local_pose,
